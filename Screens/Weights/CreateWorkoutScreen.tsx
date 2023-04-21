@@ -20,7 +20,6 @@ sets:number
     const [SelectedExerSize, setSelectedExerSize] = useState("");
     const [ExerSizeSets, setExerSizeSets] = useState<number>(0);
     const [ExerSizes, setExerSizes] = useState<exerSize[]>([]);
-    const {userId} =useContext(FitnessContext)
     const numbers = [0,1,2,3,4,5,6,7];
     const exercises = [
         " ",

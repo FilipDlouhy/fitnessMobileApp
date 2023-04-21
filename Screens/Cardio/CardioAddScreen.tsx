@@ -1,27 +1,89 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Platform, TouchableHighlight } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput,  TouchableHighlight } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { FitnessContext } from '../../FitnessContext';
+import uuid from 'react-uuid';
+import { db } from '../../FireBaseConfig';
+import { ref, set } from 'firebase/database';
 
-export default function CardioAddScreen() {
-    const [text, setText] = useState('');
-    const [selectedValue, setSelectedValue] = useState("");
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+interface CardioWorkoutDatabase
+{
+    calories:number,
+    sport:string,
+    date:string,
+    id:string
+}
 
-    const handleTextChange = (newText:string) => {
-        setText(newText);
+
+export default function CardioAddScreen({navigation}:any) {
+    const [duration, setDuration] = useState('');
+    const [selectedIntesity, setSelectedIntesity] = useState("");
+    const {selectedSport} = useContext(FitnessContext)
+    const handleDurationChange = (newText:string) => {
+        setDuration(newText);
     };
 
-    const handleDateChange = (event: any, date?: Date) => {
-        if (date) {
-            setSelectedDate(date);
+    function calculateCaloriesBurned(sport: string, intensity: string, duration: number): number {
+        const SPORTS: Record<string, Record<string, number>> = {
+          basketball: {
+            low: 240,
+            medium: 345,
+            hard: 480
+          },
+          bike: {
+            low: 240,
+            medium: 345,
+            hard: 480
+          },
+          swimming: {
+            low: 270,
+            medium: 400,
+            hard: 540
+          },
+          elliptical: {
+            low: 270,
+            medium: 400,
+            hard: 540
+          },
+          sky: {
+            low: 240,
+            medium: 345,
+            hard: 480
+          },
+          walking: {
+            low: 50,
+            medium: 150,
+            hard: 200
+          }
+        };
+      
+        const sportCalories = SPORTS[sport.toLowerCase()];
+        const caloriesBurned = sportCalories[intensity.toLowerCase()] * (duration / 60);
+      
+        return caloriesBurned;
+      }
+
+      function addCardioToDatabase()
+      {
+        const calories = calculateCaloriesBurned(selectedSport.toLocaleLowerCase(),selectedIntesity.toLocaleLowerCase(),parseInt(duration))
+        const date = new Date()
+        const id = uuid()
+        const cardio:CardioWorkoutDatabase = 
+        {
+            calories:calories,
+            date:date.toDateString(),
+            sport:selectedSport,
+            id:id
         }
-    };
+        set(ref(db,"cardio/"+id),cardio)
+        navigation.navigate('Cardio')
+      }
+
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
             <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>BasketBall</Text>
+                <Text style={styles.HeadingText}>{selectedSport}</Text>
             </View>
 
             <View style={styles.FormContainer}>
@@ -29,30 +91,30 @@ export default function CardioAddScreen() {
                     <Text style={styles.labelText}>How Long it Lasted In minutes</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={handleTextChange}
-                        value={text}
+                        onChangeText={handleDurationChange}
+                        value={duration}
+                        keyboardType='numeric'
                         placeholder="Minutes"
                     />
                 </View>
 
                 <View style={styles.label}>
-                    <Text style={styles.labelText}>Select sasadasdadasd </Text>
+                    <Text style={styles.labelText}>Select intesity </Text>
                     <Picker
-                        selectedValue={selectedValue}
+                        selectedValue={selectedIntesity}
                         style={styles.input}
-                        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+                        onValueChange={(itemValue, itemIndex) => setSelectedIntesity(itemValue)}
                     >
                         <Picker.Item key={"Low"} label={"Low"} value={"Low"} />
                         <Picker.Item key={"Medium"} label={"Medium"} value={"Medium"} />
                         <Picker.Item key={"Hard"} label={"Hard"} value={"Hard"} />
-                        <Picker.Item key={"Itense"} label={"Itense"} value={"Itense"} />
                     </Picker>
                 </View>
 
 
 
                 <View style={styles.BottomButtonContainer}>
-                    <TouchableHighlight style={styles.BottomButton}>
+                    <TouchableHighlight onPress={()=>{addCardioToDatabase()}} style={styles.BottomButton}>
                         <Text style={styles.BottomButtonText}>Add Cardio for Today</Text>
                     </TouchableHighlight>
                 </View>

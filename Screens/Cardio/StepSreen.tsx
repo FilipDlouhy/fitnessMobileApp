@@ -1,22 +1,48 @@
-import { useState } from 'react';
+import { get, ref, set } from 'firebase/database';
+import { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, Platform, TouchableHighlight } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { db } from '../../FireBaseConfig';
 
-export default function StepSreen() {
-    const [text, setText] = useState('');
-    const [selectedValue, setSelectedValue] = useState("");
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+interface Steps
+{
+    date:string,
+    stepsForToday:number
+}
 
-    const handleTextChange = (newText:string) => {
-        setText(newText);
+export default function StepSreen({navigation}:any) {
+    const [steps, setSteps] = useState('');
+    useEffect(() => {
+        const date = new Date()
+        const dailyStatsRef = ref(db, "Steps/"+date.toDateString());
+        get(dailyStatsRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            Object.values(snapshot.val()).map((Steps)=>{
+                //@ts-ignore
+               if(!isNaN(Steps))
+               {
+                //@ts-ignore
+                setSteps(Steps.toString())
+               } 
+            })
+          }
+        });
+      }, []);
+
+    const handleStepsChange = (newText:string) => {
+        setSteps(newText);
     };
 
-    const handleDateChange = (event: any, date?: Date) => {
-        if (date) {
-            setSelectedDate(date);
+    function addStepsToDatabase()
+    {
+        const date = new Date()
+        const Steps:Steps =
+        {
+            date:date.toDateString(),
+            stepsForToday:parseInt(steps)
         }
-    };
+        set(ref(db,"Steps/"+date.toDateString()),Steps)
+        navigation.navigate('Cardio')
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -29,10 +55,10 @@ export default function StepSreen() {
                     <Text style={styles.labelText}>How many Steps to Add</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={handleTextChange}
-                        value={text}
+                        onChangeText={handleStepsChange}
+                        value={steps}
                         keyboardType='numeric'
-                        placeholder="Minutes"
+                        placeholder="Steps"
                     />
                 </View>
 
@@ -41,7 +67,7 @@ export default function StepSreen() {
 
 
                 <View style={styles.BottomButtonContainer}>
-                    <TouchableHighlight style={styles.BottomButton}>
+                    <TouchableHighlight onPress={()=>{addStepsToDatabase()}} style={styles.BottomButton}>
                         <Text style={styles.BottomButtonText}>Add Steps for Today</Text>
                     </TouchableHighlight>
                 </View>

@@ -14,6 +14,7 @@ import { FitnessContext } from './FitnessContext';
 import WeightLiftingScreen from './Screens/Weights/WeightLiftingScreen';
 import WorkoutScreen from './Screens/Weights/WorkoutScreen';
 import FoodAddedToday from './Screens/Food/FoodAddedToday';
+import AllCardioWorkoutsScreen from './Screens/Cardio/AllCardioWorkoutsScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,10 +23,10 @@ const Stack = createStackNavigator();
 
 export default function App() {
   const [userId,setUserId] = useState<string>("69b3785d-1c5a-4f1a-9d6f-d8f630faff1a")
-
+  const [selectedSport,setSelectedSport] = useState<string>("69b3785d-1c5a-4f1a-9d6f-d8f630faff1a")
 
   return (
-    <FitnessContext.Provider value={{userId}}>
+    <FitnessContext.Provider value={{userId,selectedSport,setSelectedSport}}>
       <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -40,9 +41,9 @@ export default function App() {
         <Stack.Screen name="YourStats" component={YourStatsScreen} />
         <Stack.Screen name="StepSreen" component={StepSreen} />
         <Stack.Screen name="Food Today" component={FoodAddedToday} />
+        <Stack.Screen name="All Cardio Workouts" component={AllCardioWorkoutsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     </FitnessContext.Provider>
   );
 }
-
