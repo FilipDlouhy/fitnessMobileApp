@@ -89,7 +89,7 @@ sets:number
         const id = uuid()
         const workout ={
             name:WokroutName,
-            exercises:ExerSizes,
+            exersizes:ExerSizes,
             id:id
         }
         set(ref(db,"workouts/"+id),workout)

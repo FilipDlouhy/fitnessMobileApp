@@ -1,4 +1,4 @@
-import { ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import React,{useEffect} from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { db } from '../../FireBaseConfig';
@@ -14,27 +14,69 @@ interface foodDatabase
   id:string,
   date:string
 }
-
+interface Calories{
+  eaten:number,
+  planned:number
+}
 
 interface props
 {
     food:foodDatabase,
     setTodayFood: React.Dispatch<React.SetStateAction<foodDatabase[] | undefined>>
     todayFood: foodDatabase[] | undefined
+    setTodayFoodRender: React.Dispatch<React.SetStateAction<foodDatabase[] | undefined>>
+    todayFoodRender: foodDatabase[]
+    setCaloriesEaten: React.Dispatch<React.SetStateAction<Calories | undefined>>
+    caloriesEaten: Calories | undefined
 }
-export default function TodayFoodItem({food,setTodayFood,todayFood}:props) {
+export default function TodayFoodItem({setCaloriesEaten,caloriesEaten,todayFoodRender,setTodayFoodRender,food,setTodayFood,todayFood}:props) {
 
 
     function deleteFood()
     {
         const arr:foodDatabase[] =[]
+        const arrToRender:foodDatabase[] =[]
         todayFood?.map((obj)=>{
-            if(food.id === obj.id)
+            if(food.id !== obj.id)
             {
                 arr.push(obj)
             }
+            else
+            {
+              const caloriesToSubtract:number = obj.ammount * parseInt(obj.calories)
+              if(caloriesEaten)
+              {
+                setCaloriesEaten({eaten:caloriesEaten?.eaten-caloriesToSubtract,planned:caloriesEaten?.planned})
+              }
+            }
         })
+        todayFoodRender?.map((obj)=>{
+          if(food.id !== obj.id)
+          {
+            arrToRender.push(obj)
+          }
+      })
+
+        const caloriesConsumedByDay = ref(db, `caloriesConsumedByDay/${food.date}`);
+        let calories = -(parseInt(food.calories) * food.ammount);
+        get(caloriesConsumedByDay).then((snapshot) => {
+          if (snapshot.exists()) {
+            
+            Object.values(snapshot.val()).map((item:any)=>{
+                calories+= item
+            })
+           
+            set(caloriesConsumedByDay,{caloriesBurned:calories})
+          }
+          else
+          {
+            set(caloriesConsumedByDay,{caloriesBurned:calories})
+    
+          }
+        });
+
         setTodayFood(arr)
+        setTodayFoodRender(arrToRender)
         const dailyStatsRef = ref(db, `food/${food.id}`);
         set(dailyStatsRef, null);
     }

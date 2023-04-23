@@ -9,8 +9,10 @@ interface CardioWorkoutDatabase
     calories:number,
     sport:string,
     date:string,
-    id:string
+    id:string,
+    duration:number
 }
+
 interface props
 {
     cardioWorkouts: CardioWorkoutDatabase[] | undefined
@@ -52,6 +54,12 @@ function CardioWorkout({cardio,cardioWorkouts,setCardioWorkouts}:props) {
             <Text style={styles.cardioWorkoutViewAroundViewData}>{cardio.calories}</Text>
         </View>            
     </View>
+    <View style={styles.cardioWorkoutViewCenter}>
+        <View style={styles.cardioWorkoutViewAroundView}>
+            <Text style={styles.cardioWorkoutViewAroundViewHeading}>Minutes</Text>
+            <Text style={styles.cardioWorkoutViewAroundViewData}>{cardio.duration} </Text>
+        </View>            
+    </View>
 
     <View style={styles.cardioWorkoutViewCenter}>
         <TouchableHighlight onPress={()=>{deleteWorkout()}} style={styles.DeleteBTN}>
@@ -84,7 +92,7 @@ const styles = StyleSheet.create({
     cardioWorkoutViewCenter:
     {
       width:"100%",
-      height:"25%",
+      height:"20%",
       display:"flex",
       flexDirection:"row",
       justifyContent:"center",
@@ -93,7 +101,7 @@ const styles = StyleSheet.create({
     cardioWorkoutViewAround:
     {
       width:"100%",
-      height:"50%",
+      height:"40%",
       display:"flex",
       flexDirection:"row",
       justifyContent:"space-around",
@@ -108,13 +116,13 @@ const styles = StyleSheet.create({
     },
     cardioWorkoutViewAroundViewHeading:
     {
-      fontSize:22,
+      fontSize:20,
       fontWeight:"700",
       color:"white"
     },
     cardioWorkoutViewAroundViewData:
     {
-      fontSize:18,
+      fontSize:15,
       fontWeight:"500",
       color:"white",
       textAlign:"center"
@@ -130,7 +138,7 @@ const styles = StyleSheet.create({
     },
     DeleteBTNText:
     {
-      fontSize:20,
+      fontSize:15,
       fontWeight:"500"
     }
   });

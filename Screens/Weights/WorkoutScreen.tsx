@@ -9,9 +9,10 @@ import Workout from '../../Components/WeightLifting/Workout';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
-import { get, ref } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
 import WorkoutExerSize from '../../Components/WeightLifting/WorkoutExerSize';
+import uuid from 'react-uuid';
 
 interface exerSize 
 {
@@ -38,8 +39,8 @@ export default function WorkoutScreen({navigation,route}: Props) {
     const [ExerSizes,setExerSizes] = useState<exerSize[]>([])
 
     useEffect(() => {
-        const dailyStatsRef = ref(db, `workouts/${route.params.workoutId}`);
-        get(dailyStatsRef).then((snapshot) => {
+        const workoutsRef = ref(db, `workouts/${route.params.workoutId}`);
+        get(workoutsRef).then((snapshot) => {
           if (snapshot.exists()) {
            const workout = snapshot.val()
            let exersizes
@@ -67,6 +68,47 @@ export default function WorkoutScreen({navigation,route}: Props) {
         });
       }, []);
 
+      function updateWorkout()
+      {
+        if(Wokrout){
+            const newWorokout:workout= {exersizes:ExerSizes,id:Wokrout?.id,name:Wokrout?.name}
+            const dailyStatsRef = ref(db, `workouts/${Wokrout?.id}`);
+            set(dailyStatsRef,newWorokout);
+            navigation.navigate("Weight Lifting")
+        }
+
+      }
+
+      function addWorkoutForToday()
+      {
+        const date = new Date()
+        const id = uuid()
+        const workoutsRef = ref(db, `wokroutDoneByDay/${id}`);
+        set(workoutsRef,  {date:date.toDateString(),id:Wokrout?.id});
+        let calories = 0
+        Wokrout?.exersizes.map((exersize)=>{
+           calories += exersize.sets * 15
+        })
+
+        const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+        get(caloriesBurnedTodayRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            
+            Object.values(snapshot.val()).map((item:any)=>{
+                calories+= item
+            })
+           
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+          }
+          else
+          {
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+
+          }
+        });
+
+        navigation.navigate("Weight Lifting")
+      }
 
     return (<ScrollView contentContainerStyle={styles.scrollViewContent}>
 
@@ -94,7 +136,7 @@ export default function WorkoutScreen({navigation,route}: Props) {
                         </View>
 
                        {ShowUpdate&&  <View style={styles.BottomButton}>
-                            <TouchableHighlight style={styles.BottomButtonTouch}>
+                            <TouchableHighlight onPress={()=>{updateWorkout()}} style={styles.BottomButtonTouch}>
                                 <Text style={styles.BottomButtonTouchText}>Update Workout</Text>
                             </TouchableHighlight>
                         </View>}
@@ -102,7 +144,7 @@ export default function WorkoutScreen({navigation,route}: Props) {
             </View>
 
 
-            <TouchableHighlight  style={styles.AddWrokoutBtn} >
+            <TouchableHighlight onPress={()=>{addWorkoutForToday()}}  style={styles.AddWrokoutBtn} >
                     <Text  style={styles.AddWrokoutBtnText}>Add Workout for Today</Text>
             </TouchableHighlight>
 

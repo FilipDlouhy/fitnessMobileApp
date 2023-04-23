@@ -30,6 +30,7 @@ export default function WorkoutExerSize({exerSize,setShowUpdate,ExerSizes,setExe
         const index = ExerSizes.findIndex((e) => e.name === exerSize.name);
         const updatedExerSizes = [...ExerSizes];
         updatedExerSizes[index] = { ...exerSize, sets: newSets };
+        console.log(updatedExerSizes)
         setExerSizes(updatedExerSizes);
         setShowUpdate(true);
       };

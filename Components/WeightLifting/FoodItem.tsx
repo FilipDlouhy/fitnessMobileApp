@@ -36,7 +36,7 @@ interface props
 }
 
 import { useState} from 'react';
-import { ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
 import uuid from 'react-uuid';
 import { Picker } from '@react-native-picker/picker';
@@ -65,6 +65,26 @@ export default function FoodItem({foodItem}:props) {
       date:date.toDateString()
     }
     set(ref(db,"food/"+id),foodItemDatabase)
+
+
+    const caloriesConsumedByDay = ref(db, `caloriesConsumedByDay/${date.toDateString()}`);
+    let calories = parseInt(foodItemDatabase.calories) * foodItemDatabase.ammount
+    get(caloriesConsumedByDay).then((snapshot) => {
+      if (snapshot.exists()) {
+        
+        Object.values(snapshot.val()).map((item:any)=>{
+            calories+= item
+        })
+       
+        set(caloriesConsumedByDay,{caloriesBurned:calories})
+      }
+      else
+      {
+        set(caloriesConsumedByDay,{caloriesBurned:calories})
+
+      }
+    });
+
   };
 
   return (

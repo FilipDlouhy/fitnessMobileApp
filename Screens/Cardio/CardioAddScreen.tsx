@@ -4,14 +4,15 @@ import { Picker } from '@react-native-picker/picker';
 import { FitnessContext } from '../../FitnessContext';
 import uuid from 'react-uuid';
 import { db } from '../../FireBaseConfig';
-import { ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 
 interface CardioWorkoutDatabase
 {
     calories:number,
     sport:string,
     date:string,
-    id:string
+    id:string,
+    duration:number
 }
 
 
@@ -60,7 +61,7 @@ export default function CardioAddScreen({navigation}:any) {
         const sportCalories = SPORTS[sport.toLowerCase()];
         const caloriesBurned = sportCalories[intensity.toLowerCase()] * (duration / 60);
       
-        return caloriesBurned;
+        return Math.round(caloriesBurned);
       }
 
       function addCardioToDatabase()
@@ -73,8 +74,26 @@ export default function CardioAddScreen({navigation}:any) {
             calories:calories,
             date:date.toDateString(),
             sport:selectedSport,
-            id:id
+            id:id,
+            duration:parseInt(duration)
         }
+        const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+        let newCalories =  calories
+         get(caloriesBurnedTodayRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            
+            Object.values(snapshot.val()).map((item:any)=>{
+                newCalories+= item
+            })
+           
+            set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
+          }
+          else
+          {
+            set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
+
+          }
+        });
         set(ref(db,"cardio/"+id),cardio)
         navigation.navigate('Cardio')
       }

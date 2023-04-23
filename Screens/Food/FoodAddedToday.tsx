@@ -1,8 +1,9 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect, useContext } from 'react';
 import { ScrollView, TextInput, TouchableHighlight, View, Text, StyleSheet } from 'react-native';
 import TodayFoodItem from '../../Components/WeightLifting/TodayFoodItem';
 import { get, ref } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
+import { FitnessContext } from '../../FitnessContext';
 
 interface foodDatabase
 {
@@ -14,48 +15,94 @@ interface foodDatabase
   id:string,
   date:string
 }
+interface Calories{
+  eaten:number,
+  planned:number
+}
 
 export default function FoodAddedToday() {
-  const [text, setText] = useState('');
   const [todayFood,setTodayFood] = useState<foodDatabase[]>()
+  const [todayFoodRender,setTodayFoodRender] = useState<foodDatabase[]>()
+  const [caloriesEaten,setCaloriesEaten] = useState<Calories>()
+  const {userId} = useContext(FitnessContext)
 
   useEffect(() => {
+    let caloriesEaten:number = 0 
     const date = new Date()
-    const dailyStatsRef = ref(db, `food/`);
-    get(dailyStatsRef).then((snapshot) => {
+    const dailyFoodRef = ref(db, `food/`);
+    get(dailyFoodRef).then((snapshot) => {
       if (snapshot.exists()) {
         const arr:foodDatabase[] = []
-        Object.values(snapshot.val()).map((food)=>{
-            //@ts-ignore
+        Object.values(snapshot.val()).map((food:any)=>{
             if(date.toDateString()=== food.date){
-                //@ts-ignore
                 arr.push(food)
+                caloriesEaten = caloriesEaten + (parseInt(food.calories) * parseInt(food.ammount))
             }
 
         })
         setTodayFood(arr)
+        setTodayFoodRender(arr)
+        console.log(caloriesEaten)
+        const dailyCaloriesRef= ref(db,`dailyStats/${userId}`);
+        get(dailyCaloriesRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val(); // get the data from the snapshot
+            const caloriesConsumed = data.CaloriesConsumed; // access the value of CaloriesBurned property
+            setCaloriesEaten({eaten:caloriesEaten,planned:caloriesConsumed})
+
+          }
+        });
+
       }
+
     });
+
   }, []);
+
+
+  function filterArray(name:string) {
+    const arr: foodDatabase[] = [];
+    if(name.length > 0)
+    {
+      todayFood?.map((item) => {
+        if (item.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())) {
+          arr.push(item);
+        }
+      });
+  
+      setTodayFoodRender(arr)
+    }
+    else
+    {
+      setTodayFoodRender(todayFood)
+    }
+
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.Heading}>
         <Text style={styles.HeadingText}>Your Food for Today</Text>
       </View>
 
-
+      <View style={styles.caloriesEaten}>
+        <Text style={styles.caloriesEatenText}>Calories Eaten</Text>
+        <Text style={styles.caloriesEatenText}>{caloriesEaten?.eaten} / {caloriesEaten?.planned}</Text>
+      </View>
 
       <View style={styles.label}>
         <Text style={styles.labelText}>Find food</Text>
         <TextInput
           style={styles.input}
-          value={text}
           placeholder="Type here"
+          onChangeText={(e: string)=>{
+            filterArray(e)
+          }}
         />
       </View>
 
-      {todayFood && todayFood.map((food)=>{
-        return <TodayFoodItem setTodayFood={setTodayFood} todayFood={todayFood} food={food}/>
+      {todayFoodRender && todayFoodRender.map((food)=>{
+        return <TodayFoodItem setCaloriesEaten={setCaloriesEaten} caloriesEaten={caloriesEaten} todayFoodRender={todayFoodRender} setTodayFoodRender={setTodayFoodRender} setTodayFood={setTodayFood} todayFood={todayFood} food={food}/>
       })}
 
 
@@ -82,6 +129,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "800",
     fontSize: 35
+  },
+  caloriesEaten:{
+    height: 70,
+    backgroundColor: "#7FFFD4",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20
+  },
+  caloriesEatenText: {
+    color: "white",
+    fontWeight: "800",
+    fontSize: 25
   },
   scrollViewContent: {
     alignItems: 'center'

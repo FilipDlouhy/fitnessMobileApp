@@ -10,7 +10,8 @@ interface CardioWorkoutDatabase
     calories:number,
     sport:string,
     date:string,
-    id:string
+    id:string,
+    duration:number
 }
 
 
@@ -29,6 +30,7 @@ export default function AllCardioWorkoutsScreen({ navigation }: any) {
           //@ts-ignore
           arr.push(Cardio) 
         });
+        
         setCardioWorkouts(arr); // Move the console.log here
       }
     });

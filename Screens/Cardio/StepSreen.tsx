@@ -40,7 +40,58 @@ export default function StepSreen({navigation}:any) {
             date:date.toDateString(),
             stepsForToday:parseInt(steps)
         }
-        set(ref(db,"Steps/"+date.toDateString()),Steps)
+        //set(ref(db,"Steps/"+date.toDateString()),Steps)
+        let calories = 0
+        const stepsRef = ref(db,"Steps/"+date.toDateString())
+        get(stepsRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            let oldSteps:any 
+            Object.values(snapshot.val()).map((item:any)=>{
+                oldSteps =  item
+            })
+            calories = (parseInt(steps) - parseInt(oldSteps)) *0.08
+            
+            const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+            get(caloriesBurnedTodayRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                
+                Object.values(snapshot.val()).map((item:any)=>{
+                    calories+= item
+                })
+            
+                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+            }
+            else
+            {
+                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+
+            }
+            set(ref(db,"Steps/"+date.toDateString()),Steps)
+            });
+          }
+          else
+          {
+            calories = parseInt(steps) *0.08
+            const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+            get(caloriesBurnedTodayRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                
+                Object.values(snapshot.val()).map((item:any)=>{
+                    calories+= item
+                })
+            
+                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+            }
+            else
+            {
+                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+
+            }})
+            set(ref(db,"Steps/"+date.toDateString()),Steps)
+          }
+        });
+
+
         navigation.navigate('Cardio')
     }
 
@@ -68,7 +119,7 @@ export default function StepSreen({navigation}:any) {
 
                 <View style={styles.BottomButtonContainer}>
                     <TouchableHighlight onPress={()=>{addStepsToDatabase()}} style={styles.BottomButton}>
-                        <Text style={styles.BottomButtonText}>Add Steps for Today</Text>
+                        <Text style={styles.BottomButtonText}>Upadate Steps for Today</Text>
                     </TouchableHighlight>
                 </View>
 
@@ -137,7 +188,7 @@ export default function StepSreen({navigation}:any) {
         alignItems:"center"
     },BottomButton:
     {
-        width:"60%",
+        width:"65%",
         height:70,
         backgroundColor:"#00FF00",
         borderRadius:5,
