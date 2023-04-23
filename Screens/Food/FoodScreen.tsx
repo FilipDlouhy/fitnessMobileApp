@@ -1,19 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, FlatList, TouchableHighlight } from 'react-native';
-
-
-
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableHighlight } from 'react-native';
+import { useState } from 'react';
+import FoodItem from '../../Components/FoodItem';
 interface food
 {
   name: string
   brand:  string
   calories: string
 }
-
-
-import { useState } from 'react';
-import FoodItem from '../../Components/FoodItem';
-
-
 export default function FoodScreen({ navigation }:any) {
   const [foodData, setFoodData] = useState<food[]>();
   const [text, setText] = useState('');
@@ -24,16 +17,12 @@ export default function FoodScreen({ navigation }:any) {
     const data = await response.json();
     return data.hits;
   }
-
-
   const handleTextChange = (newText:string) => {
     if(newText.length > 0)
     {
       setText(newText);
       fetchNutritionData(newText).then((hits) => {
-    
-        let arr:food[] = []
-  
+        const arr:food[] = []
         hits.forEach((hit:any) => {
           arr.push({brand:hit.fields.brand_name,calories:hit.fields.nf_calories,name:hit.fields.item_name})
         });
@@ -43,45 +32,35 @@ export default function FoodScreen({ navigation }:any) {
     {
       setFoodData([])
     }
-
   };
-
-
-
-  return (
+return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.Heading}>
         <Text style={styles.HeadingText}>Food</Text>
       </View>
 
+      <TouchableHighlight  onPress={()=>{
+        navigation.navigate("Food Today")
+      }}
+          style={styles.ChangeStatsBtn}>
+        <Text style={styles.ChangeStatsBtnText}>See your food</Text>
+    </TouchableHighlight>
 
-              <TouchableHighlight  onPress={()=>{
-                navigation.navigate("Food Today")
-              }}
-                 style={styles.ChangeStatsBtn}>
-                <Text style={styles.ChangeStatsBtnText}>See your food</Text>
-            </TouchableHighlight>
-
-
-      <View style={styles.label}>
-                <Text style={styles.labelText}>Name of the food</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleTextChange}
-                    value={text}
-                    placeholder="Type here"
-                /> 
-       </View>
-
-
-    {foodData && foodData.map((item)=>{
-      return <FoodItem   foodItem={item}/>
-    })
-          
+    <View style={styles.label}>
+              <Text style={styles.labelText}>Name of the food</Text>
+              <TextInput
+                  style={styles.input}
+                  onChangeText={handleTextChange}
+                  value={text}
+                  placeholder="Type here"
+              /> 
+    </View>
+    {
+      foodData && foodData.map((item)=>{
+        return <FoodItem   foodItem={item}/>
+      })
     }
-
-
-    </ScrollView>
+  </ScrollView>
   );
 }
 

@@ -4,7 +4,6 @@ import {useEffect, useState} from "react"
 import {ref,get} from "firebase/database"
 import { db } from '../../FireBaseConfig';
 
-
 interface exerSize 
 {
 name:string,
@@ -21,14 +20,14 @@ interface workout
 export default function WeightLiftingScreen({ navigation }:any) {
 
     const [Workouts, setWorkouts] = useState<workout[]>([])
+
     useEffect(() => {
         const dailyStatsRef = ref(db, `workouts/`);
         get(dailyStatsRef).then((snapshot) => {
           if (snapshot.exists()) {
             const arr:workout[] = []
            const workouts = snapshot.val()
-           Object.values(workouts).map((value) => {
-            // @ts-ignore
+           Object.values(workouts).map((value:any) => {
             const newWorkout:workout ={exersizes:value.exercises,id:value.id,name:value.name}
             arr.push(newWorkout)
           });
@@ -36,30 +35,27 @@ export default function WeightLiftingScreen({ navigation }:any) {
           }
         });
       }, []);
-    return (
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
-            <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>Your Workouts</Text>
-            </View>
-
-            <TouchableHighlight
-            onPress={() => navigation.navigate('Create Workout')}
-            style={styles.CreateWorkout}
-              >
-              <Text style={styles.CreateWorkoutText}>Create Workouts</Text>
-            </TouchableHighlight>
-
-            <Text style={styles.YourWorkoutsText}>Your Workouts</Text>
-
-            {Workouts.map((workout)=>{
-                return <Workout Workouts={Workouts} setWorkouts={setWorkouts} navigation={navigation}  workout={workout}/>
-            })}
-
-
-       </ScrollView>
+return (
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.Heading}>
+            <Text style={styles.HeadingText}>Your Workouts</Text>
+        </View>
         
-    );
+        <TouchableHighlight
+        onPress={() => navigation.navigate('Create Workout')}
+        style={styles.CreateWorkout}
+            >
+            <Text style={styles.CreateWorkoutText}>Create Workouts</Text>
+        </TouchableHighlight>
+
+        <Text style={styles.YourWorkoutsText}>Your Workouts</Text>
+        {
+            Workouts.map((workout)=>{
+                return <Workout Workouts={Workouts} setWorkouts={setWorkouts} navigation={navigation}  workout={workout}/>
+            })
+        }
+    </ScrollView>
+);
 }
 
 const styles = StyleSheet.create({

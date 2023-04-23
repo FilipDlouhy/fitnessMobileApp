@@ -1,5 +1,5 @@
 import React, { useState,useEffect, useContext } from 'react';
-import { ScrollView, TextInput, TouchableHighlight, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, TextInput, View, Text, StyleSheet } from 'react-native';
 import TodayFoodItem from '../../Components/TodayFoodItem';
 import { get, ref } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
@@ -27,7 +27,7 @@ export default function FoodAddedToday() {
   const {userId} = useContext(FitnessContext)
 
   useEffect(() => {
-    let caloriesEaten:number = 0 
+    let caloriesEaten = 0 
     const date = new Date()
     const dailyFoodRef = ref(db, `food/`);
     get(dailyFoodRef).then((snapshot) => {
@@ -49,14 +49,10 @@ export default function FoodAddedToday() {
             const data = snapshot.val(); // get the data from the snapshot
             const caloriesConsumed = data.CaloriesConsumed; // access the value of CaloriesBurned property
             setCaloriesEaten({eaten:caloriesEaten,planned:caloriesConsumed})
-
           }
         });
-
       }
-
     });
-
   }, []);
 
 

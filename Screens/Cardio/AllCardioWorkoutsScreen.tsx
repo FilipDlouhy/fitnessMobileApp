@@ -1,6 +1,6 @@
-import { get, ref, set } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { db } from '../../FireBaseConfig';
 import CardioWorkout from '../../Components/CardioWorkout';
 
@@ -15,10 +15,7 @@ interface CardioWorkoutDatabase
 }
 
 
-export default function AllCardioWorkoutsScreen({ navigation }: any) {
-
-
-
+export default function AllCardioWorkoutsScreen() {
   const [cardioWorkouts,setCardioWorkouts] = useState<CardioWorkoutDatabase[]>()
   
   useEffect(() => {
@@ -26,8 +23,7 @@ export default function AllCardioWorkoutsScreen({ navigation }: any) {
     const dailyStatsRef = ref(db,'cardio/');
     get(dailyStatsRef).then((snapshot) => {
       if (snapshot.exists()) {
-        Object.values(snapshot.val()).map((Cardio) => {
-          //@ts-ignore
+        Object.values(snapshot.val()).map((Cardio:any) => {
           arr.push(Cardio) 
         });
         
@@ -36,20 +32,16 @@ export default function AllCardioWorkoutsScreen({ navigation }: any) {
     });
   }, []);
 
+return (
+  <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <View style={styles.heading}>
+      <Text style={styles.headingText}>All your Cardio workouts</Text>
+    </View>
 
-  return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      <View style={styles.heading}>
-        <Text style={styles.headingText}>All your Cardio workouts</Text>
-      </View>
-
-      {cardioWorkouts&& cardioWorkouts.map((cardio)=>{
-      return  <CardioWorkout setCardioWorkouts={setCardioWorkouts} cardioWorkouts={cardioWorkouts} cardio={cardio}/>
-      })}
-
-
-      
-    </ScrollView>
+    {cardioWorkouts&& cardioWorkouts.map((cardio)=>{
+    return  <CardioWorkout setCardioWorkouts={setCardioWorkouts} cardioWorkouts={cardioWorkouts} cardio={cardio}/>
+    })}
+  </ScrollView>
   );
 }
 

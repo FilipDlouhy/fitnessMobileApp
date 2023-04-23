@@ -2,77 +2,72 @@ import { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
 import { FitnessContext } from '../../FitnessContext';
 
-export default function CardioScreen({
-    navigation
-}: any) {
+export default function CardioScreen({navigation}:any) {
     const {setSelectedSport} = useContext(FitnessContext)
-    return (
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+return (
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.Heading}>
+            <Text style={styles.HeadingText}>Your Cardio Workouts</Text>
+        </View>
+        
+        <TouchableHighlight
+        onPress={() => navigation.navigate('All Cardio Workouts')}
+        style={styles.CreateWorkout}
+        >
+            <Text style={styles.CreateWorkoutText}>See all your cardio workouts</Text>
+        </TouchableHighlight>
 
-            <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>Your Cardio Workouts</Text>
-            </View>
-
-
-            
-            <TouchableHighlight
-            onPress={() => navigation.navigate('All Cardio Workouts')}
-            style={styles.CreateWorkout}
-              >
-              <Text style={styles.CreateWorkoutText}>See all your cardio workouts</Text>
+        <View style={styles.CardioVariants}>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("Swimming")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Swimming</Text>
             </TouchableHighlight>
-
-             <View style={styles.CardioVariants}>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("Swimming")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Swimming</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("Bike")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Bike</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("BasketBall")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>BasketBall</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("Walking")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Walking</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("Eliptical")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Eliptical</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("CardioAddScreen")
-                        setSelectedSport("Sky")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Sky</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{
-                        navigation.navigate("StepSreen")
-                    }} style={styles.CardioVariant}>
-                        <Text style={styles.CardioVariantText}>Steps</Text>
-                    </TouchableHighlight>
-            </View>   
-       </ScrollView>
-    );
-  }
-  const styles = StyleSheet.create({
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("Bike")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Bike</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("BasketBall")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>BasketBall</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("Walking")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Walking</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("Eliptical")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Eliptical</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("CardioAddScreen")
+                setSelectedSport("Sky")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Sky</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{
+                navigation.navigate("StepSreen")
+            }} style={styles.CardioVariant}>
+                <Text style={styles.CardioVariantText}>Steps</Text>
+            </TouchableHighlight>
+        </View>   
+    </ScrollView>
+);
+}
+const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      flexDirection: 'column',
-      alignItems: 'center'
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center'
     },
     scrollViewContent: {
         alignItems: 'center'

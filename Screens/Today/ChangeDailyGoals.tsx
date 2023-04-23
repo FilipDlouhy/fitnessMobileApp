@@ -5,10 +5,6 @@ import { db } from '../../FireBaseConfig';
 import {useContext} from "react"
 import { FitnessContext } from '../../FitnessContext';
 
-
-
-
-
 export default function ChangeDailyGoals({ navigation }:any) {
     const {userId} =useContext(FitnessContext)
     const [CaloriesConsumed, setCaloriesConsumed] = useState('');
@@ -24,99 +20,91 @@ export default function ChangeDailyGoals({ navigation }:any) {
         setSteps(newText);
       };
       const ChangeStats = () => {
-
         set(ref(db,"dailyStats/"+userId),{
             CaloriesConsumed:CaloriesConsumed,
             CaloriesBurned:CaloriesBurned,
             Steps:Steps,
             id:userId
         })
-
       };
 
-      function UpdateStats() {
+    function UpdateStats() {
         set(ref(db, `dailyStats/${userId}`), {
             CaloriesConsumed:CaloriesConsumed,
             CaloriesBurned:CaloriesBurned,
             Steps:Steps,
             id:userId
         });
-      }
-      useEffect(() => {
+    }
+
+    useEffect(() => {
         const dailyStatsRef = ref(db, `dailyStats/${userId}`);
         get(dailyStatsRef).then((snapshot) => {
-          if (snapshot.exists()) {
+            if (snapshot.exists()) {
             const stats= snapshot.val()
             setCaloriesConsumed(stats.CaloriesConsumed)
             setCaloriesBurned(stats.CaloriesBurned)
             setSteps(stats.Steps)
-          }
+            }
         });
-      }, []);
+    }, []);
 
+return (
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.Heading}>
+            <Text style={styles.HeadingText}>Change Your Stats for Today</Text>
+        </View>
 
-    return (
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Calories Consumed in a Day</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={handleCaloriesConsumed}
+                value={CaloriesConsumed}
+                placeholder="Type here"
+                keyboardType='numeric'
+            />
+        </View>
 
-            <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>Change Your Stats for Today</Text>
-            </View>
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Calories Burned in a Day</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={handleCaloriesBurned}
+                value={CaloriesBurned}
+                placeholder="Type here"
+                keyboardType='numeric'
+            />
+        </View>
 
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Calories Consumed in a Day</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleCaloriesConsumed}
-                    value={CaloriesConsumed}
-                    placeholder="Type here"
-                    keyboardType='numeric'
-                />
-            </View>
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Steps in a Day</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={handleSteps}
+                value={Steps}
+                placeholder="Type here"
+                keyboardType='numeric'
+            />
+        </View>
 
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Calories Burned in a Day</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleCaloriesBurned}
-                    value={CaloriesBurned}
-                    placeholder="Type here"
-                    keyboardType='numeric'
-                />
-            </View>
-
-
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Steps in a Day</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleSteps}
-                    value={Steps}
-                    placeholder="Type here"
-                    keyboardType='numeric'
-                />
-            </View>
-
-
-            <View style={styles.BottomG}>
-                <TouchableHighlight onPress={()=>{
-                    if(CaloriesConsumed && CaloriesBurned&& Steps)
-                    {
-                        UpdateStats()
-                    }
-                    else
-                    {
-                        ChangeStats()
-                    }
-                    navigation.navigate("Today")
-                  }} style={styles.ChangeStatsBtn}>
-                    <Text style={styles.ChangeStatsBtnText}>Update Daily Goals</Text>
-                </TouchableHighlight>
-            </View>
-
-
-       </ScrollView>
-        
-    );
+        <View style={styles.BottomG}>
+            <TouchableHighlight onPress={()=>{
+                if(CaloriesConsumed && CaloriesBurned&& Steps)
+                {
+                    UpdateStats()
+                }
+                else
+                {
+                    ChangeStats()
+                }
+                navigation.navigate("Today")
+                }} style={styles.ChangeStatsBtn}>
+                <Text style={styles.ChangeStatsBtnText}>Update Daily Goals</Text>
+            </TouchableHighlight>
+        </View>
+    </ScrollView>
+);
 }
 
 const styles = StyleSheet.create({

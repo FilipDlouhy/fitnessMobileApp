@@ -1,6 +1,6 @@
 import { get, ref, set } from 'firebase/database';
 import { useState,useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Platform, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableHighlight } from 'react-native';
 import { db } from '../../FireBaseConfig';
 
 interface Steps
@@ -15,125 +15,117 @@ export default function StepSreen({navigation}:any) {
         const date = new Date()
         const dailyStatsRef = ref(db, "Steps/"+date.toDateString());
         get(dailyStatsRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            Object.values(snapshot.val()).map((Steps)=>{
-                //@ts-ignore
-               if(!isNaN(Steps))
-               {
-                //@ts-ignore
+            if (snapshot.exists()) {
+            Object.values(snapshot.val()).map((Steps:any)=>{
+                if(!isNaN(Steps))
+                {
                 setSteps(Steps.toString())
-               } 
+                } 
             })
-          }
+            }
         });
-      }, []);
+        }, []);
 
     const handleStepsChange = (newText:string) => {
         setSteps(newText);
     };
 
-    function addStepsToDatabase()
+function addStepsToDatabase()
+{
+    const date = new Date()
+    const Steps:Steps =
     {
-        const date = new Date()
-        const Steps:Steps =
-        {
-            date:date.toDateString(),
-            stepsForToday:parseInt(steps)
-        }
-        //set(ref(db,"Steps/"+date.toDateString()),Steps)
-        let calories = 0
-        const stepsRef = ref(db,"Steps/"+date.toDateString())
-        get(stepsRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            let oldSteps:any 
-            Object.values(snapshot.val()).map((item:any)=>{
-                oldSteps =  item
-            })
-            calories = (parseInt(steps) - parseInt(oldSteps)) *0.08
-            
-            const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
-            get(caloriesBurnedTodayRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                
-                Object.values(snapshot.val()).map((item:any)=>{
-                    calories+= item
-                })
-            
-                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
-            }
-            else
-            {
-                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
-
-            }
-            set(ref(db,"Steps/"+date.toDateString()),Steps)
-            });
-          }
-          else
-          {
-            calories = parseInt(steps) *0.08
-            const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
-            get(caloriesBurnedTodayRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                
-                Object.values(snapshot.val()).map((item:any)=>{
-                    calories+= item
-                })
-            
-                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
-            }
-            else
-            {
-                set(caloriesBurnedTodayRef,{caloriesBurned:calories})
-
-            }})
-            set(ref(db,"Steps/"+date.toDateString()),Steps)
-          }
-        });
-
-
-        navigation.navigate('Cardio')
+        date:date.toDateString(),
+        stepsForToday:parseInt(steps)
     }
+    //set(ref(db,"Steps/"+date.toDateString()),Steps)
+    let calories = 0
+    const stepsRef = ref(db,"Steps/"+date.toDateString())
+    get(stepsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+        let oldSteps:any 
+        Object.values(snapshot.val()).map((item:any)=>{
+            oldSteps =  item
+        })
+        calories = (parseInt(steps) - parseInt(oldSteps)) *0.08
+        
+        const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+        get(caloriesBurnedTodayRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            
+            Object.values(snapshot.val()).map((item:any)=>{
+                calories+= item
+            })
+        
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+        }
+        else
+        {
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
 
-    return (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>Setps</Text>
-            </View>
+        }
+        set(ref(db,"Steps/"+date.toDateString()),Steps)
+        });
+        }
+        else
+        {
+        calories = parseInt(steps) *0.08
+        const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+        get(caloriesBurnedTodayRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            
+            Object.values(snapshot.val()).map((item:any)=>{
+                calories+= item
+            })
+        
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
+        }
+        else
+        {
+            set(caloriesBurnedTodayRef,{caloriesBurned:calories})
 
-            <View style={styles.FormContainer}>
-                <View style={styles.label}>
-                    <Text style={styles.labelText}>How many Steps to Add</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleStepsChange}
-                        value={steps}
-                        keyboardType='numeric'
-                        placeholder="Steps"
-                    />
-                </View>
-
-
-
-
-
-                <View style={styles.BottomButtonContainer}>
-                    <TouchableHighlight onPress={()=>{addStepsToDatabase()}} style={styles.BottomButton}>
-                        <Text style={styles.BottomButtonText}>Upadate Steps for Today</Text>
-                    </TouchableHighlight>
-                </View>
+        }})
+        set(ref(db,"Steps/"+date.toDateString()),Steps)
+        }
+    });
 
 
-            </View>
-        </ScrollView> 
-    );
+    navigation.navigate('Cardio')
 }
 
-  const styles = StyleSheet.create({
+return (
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.Heading}>
+            <Text style={styles.HeadingText}>Setps</Text>
+        </View>
+
+        <View style={styles.FormContainer}>
+            <View style={styles.label}>
+                <Text style={styles.labelText}>How many Steps to Add</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={handleStepsChange}
+                    value={steps}
+                    keyboardType='numeric'
+                    placeholder="Steps"
+                />
+            </View>
+
+            <View style={styles.BottomButtonContainer}>
+                <TouchableHighlight onPress={()=>{addStepsToDatabase()}} style={styles.BottomButton}>
+                    <Text style={styles.BottomButtonText}>Upadate Steps for Today</Text>
+                </TouchableHighlight>
+            </View>
+        </View>
+    </ScrollView> 
+);
+}
+
+const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      flexDirection: 'column',
-      alignItems: 'center'
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center'
     },
     scrollViewContent: {
         alignItems: 'center'
@@ -161,7 +153,7 @@ export default function StepSreen({navigation}:any) {
         borderWidth: 1,
         marginVertical: 10,
         paddingHorizontal: 10,
-      }
+        }
     ,label:
     {
         width:"100%",
@@ -200,5 +192,5 @@ export default function StepSreen({navigation}:any) {
         fontSize:20,
         fontWeight:"700"
     }
-  })
-  ;
+})
+;

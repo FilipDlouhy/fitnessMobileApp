@@ -1,17 +1,16 @@
-import {useContext, useEffect, useState} from "react"
-import Workout from '../../Components/Workout';
+import {useEffect, useState} from "react"
 import { View, Text, StyleSheet,ScrollView,TextInput, TouchableHighlight } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import ExerSize from "../../Components/ExerSize";
-import {ref,set,get} from "firebase/database"
+import {ref,set} from "firebase/database"
 import { db } from '../../FireBaseConfig';
 import uuid from "react-uuid";
 export default function CreateWorkoutScreen({ navigation }:any) {
 
 interface exerSize 
 {
-name:string,
-sets:number
+    name:string,
+    sets:number
 }
     const [WokroutName, setWorkoutName] = useState('');
     const [heading,setHeading] = useState<string>("Create your workout")
@@ -78,11 +77,7 @@ sets:number
             setSelectedExerSize("")
             setExerSizeSets(0)
         }
-
       }
-
-
-
       const AddWorkoutToDatabase = () => {
         if(ExerSizes.length > 0 )
         {
@@ -105,83 +100,70 @@ sets:number
         setHeading("Please select exeresize")
       },[])
 
-    return (
+return (
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.Heading}>
+            <Text style={styles.HeadingText}>{heading}</Text>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
-            <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>{heading}</Text>
-            </View>
-
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Name of Your Workout</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleWokroutName}
-                    value={WokroutName}
-                    placeholder="Type here"
-                />
-            </View>
-
-
-
-
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Select Exersize</Text>
-                <Picker
-                selectedValue={SelectedExerSize}
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Name of Your Workout</Text>
+            <TextInput
                 style={styles.input}
-                onValueChange={(itemValue, itemIndex) => handleSelectedExerSize(itemValue)}
-                    >
-                {exercises.map((exercise) => (
-                    <Picker.Item key={exercise} label={exercise} value={exercise} />
-                ))}
-                </Picker>
-            </View>
+                onChangeText={handleWokroutName}
+                value={WokroutName}
+                placeholder="Type here"
+            />
+        </View>
 
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Select Exersize</Text>
+            <Picker
+            selectedValue={SelectedExerSize}
+            style={styles.input}
+            onValueChange={(itemValue) => handleSelectedExerSize(itemValue)}
+                >
+            {exercises.map((exercise) => (
+                <Picker.Item key={exercise} label={exercise} value={exercise} />
+            ))}
+            </Picker>
+        </View>
 
-            <View style={styles.label}>
-                <Text style={styles.labelText}>Select Number of Sets for a Exersize</Text>
-                <Picker
-                selectedValue={ExerSizeSets}
-                style={styles.input}
-                onValueChange={(itemValue, itemIndex) => handleExerSizeSets(itemValue)}
-                    >
-                {numbers.map((number) => (
-                    <Picker.Item key={number} label={number.toString()} value={number} />
-                ))}
-                </Picker>
-            </View>
+        <View style={styles.label}>
+            <Text style={styles.labelText}>Select Number of Sets for a Exersize</Text>
+            <Picker
+            selectedValue={ExerSizeSets}
+            style={styles.input}
+            onValueChange={(itemValue) => handleExerSizeSets(itemValue)}
+                >
+            {numbers.map((number) => (
+                <Picker.Item key={number} label={number.toString()} value={number} />
+            ))}
+            </Picker>
+        </View>
 
-            <TouchableHighlight onPress={()=>{
-                if(ExerSizeSets > 0)
-                {
-                    addExerSiez()
-                }
-            }} style={styles.AddExersize}>
-             <Text style={styles.AddExersizeText}>Add Exersize</Text>
-            </TouchableHighlight>
-
-
-
-            <Text style={styles.ExersizesText} >Exersizes</Text>
-
-
-
+        <TouchableHighlight onPress={()=>{
+            if(ExerSizeSets > 0)
             {
-                ExerSizes&& ExerSizes.map((exerSize)=>{
-                    return <ExerSize ExerSizes={ExerSizes} setExerSizes={setExerSizes} ExerSize={exerSize}/>
-                })
+                addExerSiez()
             }
+        }} style={styles.AddExersize}>
+            <Text style={styles.AddExersizeText}>Add Exersize</Text>
+        </TouchableHighlight>
 
-            
-            <TouchableHighlight onPress={()=>{AddWorkoutToDatabase()}} style={styles.AddWorkout}>
-             <Text style={styles.AddExersizeText}>Add Workout</Text>
-            </TouchableHighlight>
+        <Text style={styles.ExersizesText} >Exersizes</Text>
+        {
+            ExerSizes&& ExerSizes.map((exerSize)=>{
+                return <ExerSize ExerSizes={ExerSizes} setExerSizes={setExerSizes} ExerSize={exerSize}/>
+            })
+        }
 
-       </ScrollView>
-        
-    );
+        <TouchableHighlight onPress={()=>{AddWorkoutToDatabase()}} style={styles.AddWorkout}>
+            <Text style={styles.AddExersizeText}>Add Workout</Text>
+        </TouchableHighlight>
+
+    </ScrollView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -294,5 +276,4 @@ const styles = StyleSheet.create({
         fontSize:30,
         fontWeight:"900"
     }
-
 });

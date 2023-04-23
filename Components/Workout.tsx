@@ -1,13 +1,11 @@
 import { ref, set } from 'firebase/database';
-import { View, Text, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight} from 'react-native';
 import { db } from '../FireBaseConfig';
-
-
 
 interface exerSize 
 {
-name:string,
-sets:number
+    name:string,
+    sets:number
 }
 
 interface workout 
@@ -38,16 +36,15 @@ export default function Workout({navigation,workout,Workouts,setWorkouts}:props)
         setWorkouts(arr)
         const dailyStatsRef = ref(db, `workouts/${workout.id}`);
         set(dailyStatsRef, null);
-        
     }
+
     return (
-                <TouchableHighlight onPress={()=>{navigation.navigate("WorkoutScreen",{workoutId:workout.id})}}  style={styles.Workout}>
-                    <View style={styles.WorkoutContianer}>
-                        <Text style={styles.WokroutName}>{workout?.name}</Text>
-                        <Text  onPress={()=>{deleteWorkout()}} style={styles.DeleteWorkout}>X</Text>
-                    </View>
-                </TouchableHighlight>
-                
+        <TouchableHighlight onPress={()=>{navigation.navigate("WorkoutScreen",{workoutId:workout.id})}}  style={styles.Workout}>
+            <View style={styles.WorkoutContianer}>
+                <Text style={styles.WokroutName}>{workout?.name}</Text>
+                <Text  onPress={()=>{deleteWorkout()}} style={styles.DeleteWorkout}>X</Text>
+            </View>
+        </TouchableHighlight>
     );
 }
 
@@ -86,5 +83,5 @@ const styles = StyleSheet.create({
         fontWeight: "900",
         fontSize: 30,
         letterSpacing: 5,
-     }
+    }
 });

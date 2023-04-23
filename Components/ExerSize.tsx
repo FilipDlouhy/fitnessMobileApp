@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet,ScrollView,TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
 interface exerSize 
 {
-name:string,
-sets:number
+    name:string,
+    sets:number
 }
 interface props
 {
@@ -12,9 +12,9 @@ interface props
 }
 function ExerSize({ExerSize,ExerSizes,setExerSizes}:props) {
 
-    function deleteExerSize ()
+function deleteExerSize ()
     {
-        let arr:exerSize[] = []
+        const arr:exerSize[] = []
         ExerSizes.map((exerSize)=>{
             if(exerSize.name !== ExerSize.name )
             {
@@ -24,18 +24,17 @@ function ExerSize({ExerSize,ExerSizes,setExerSizes}:props) {
         setExerSizes(arr)
     }
 
-  return (
+return (
     <View style={styles.Exersize}>
         <Text style={styles.ExersizesNameSets}>{ExerSize.name} Sets:{ExerSize.sets}</Text>
         <Text onPress={()=>{deleteExerSize()}} style={styles.DeleteExerSize} > X</Text>
     </View>
-  )
+    )
 }
 
 export default ExerSize
 
 const styles = StyleSheet.create({
-
     Exersize:
     {
         width:"80%",
@@ -60,5 +59,4 @@ const styles = StyleSheet.create({
         fontSize:30,
         fontWeight:"900"
     }
-
 });
