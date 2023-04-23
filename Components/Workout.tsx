@@ -1,6 +1,6 @@
 import { ref, set } from 'firebase/database';
 import { View, Text, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
-import { db } from '../../FireBaseConfig';
+import { db } from '../FireBaseConfig';
 
 
 

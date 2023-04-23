@@ -35,17 +35,21 @@ interface props
     foodItem:food
 }
 
-import { useState} from 'react';
+import { useEffect, useState} from 'react';
 import { get, ref, set } from 'firebase/database';
-import { db } from '../../FireBaseConfig';
 import uuid from 'react-uuid';
 import { Picker } from '@react-native-picker/picker';
+import { db } from '../FireBaseConfig';
 
 export default function FoodItem({foodItem}:props) {
   const [text, setText] = useState('');
+  const [heading,setHeading] = useState<string>(foodItem.name)
   const handleTextChange = (newText:string) => {
     setText(newText);
   };
+  useEffect(()=>{
+    setHeading(foodItem.name)
+  },[])
   const options = ["Breakfast", "Snack", "Lunch", "Dinner", "Second Dinner"];
 
   const [selectedOption, setSelectedOption] = useState<string>(options[0]);
@@ -53,44 +57,49 @@ export default function FoodItem({foodItem}:props) {
 
 
   const AddFoodToDatabase = () => {
-    const id = uuid()
-    const date = new Date()
-    const foodItemDatabase:foodDatabase ={
-      name: foodItem.name,
-      brand:  foodItem.brand,
-      calories: foodItem.calories,
-      ammount:parseInt(text),
-      when:selectedOption,
-      id:id,
-      date:date.toDateString()
+    if(selectedOption && text)
+    {
+      const id = uuid()
+      const date = new Date()
+      const foodItemDatabase:foodDatabase ={
+        name: foodItem.name,
+        brand:  foodItem.brand,
+        calories: foodItem.calories,
+        ammount:parseInt(text),
+        when:selectedOption,
+        id:id,
+        date:date.toDateString()
+      }
+      set(ref(db,"food/"+id),foodItemDatabase)
+  
+      const caloriesConsumedByDay = ref(db, `caloriesConsumedByDay/${date.toDateString()}`);
+      let calories = parseInt(foodItemDatabase.calories) * foodItemDatabase.ammount
+      get(caloriesConsumedByDay).then((snapshot) => {
+        if (snapshot.exists()) {
+          
+          Object.values(snapshot.val()).map((item:any)=>{
+              calories+= item
+          })
+         
+          set(caloriesConsumedByDay,{caloriesBurned:calories})
+        }
+        else
+        {
+          set(caloriesConsumedByDay,{caloriesBurned:calories})
+  
+        }
+      });
     }
-    set(ref(db,"food/"+id),foodItemDatabase)
-
-
-    const caloriesConsumedByDay = ref(db, `caloriesConsumedByDay/${date.toDateString()}`);
-    let calories = parseInt(foodItemDatabase.calories) * foodItemDatabase.ammount
-    get(caloriesConsumedByDay).then((snapshot) => {
-      if (snapshot.exists()) {
-        
-        Object.values(snapshot.val()).map((item:any)=>{
-            calories+= item
-        })
-       
-        set(caloriesConsumedByDay,{caloriesBurned:calories})
-      }
-      else
-      {
-        set(caloriesConsumedByDay,{caloriesBurned:calories})
-
-      }
-    });
-
+    else
+    {
+      setHeading("No Ammount")
+    }
   };
 
   return (
     <View style={styles.FoodItem}>
         <View style={styles.FoodItemHeading}>
-        <Text style={styles.FoodItemHeadingText}>{foodItem.name}</Text>
+        <Text style={styles.FoodItemHeadingText}>{heading}</Text>
         </View>
         <View style={styles.FoodItemHCenter}>
             <View style={styles.FoodItemHCenterDiv}>

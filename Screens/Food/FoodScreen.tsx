@@ -11,7 +11,7 @@ interface food
 
 
 import { useState } from 'react';
-import FoodItem from '../../Components/WeightLifting/FoodItem';
+import FoodItem from '../../Components/FoodItem';
 
 
 export default function FoodScreen({ navigation }:any) {

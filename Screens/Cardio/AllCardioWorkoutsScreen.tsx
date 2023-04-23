@@ -2,7 +2,7 @@ import { get, ref, set } from 'firebase/database';
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableHighlight } from 'react-native';
 import { db } from '../../FireBaseConfig';
-import CardioWorkout from '../../Components/WeightLifting/CardioWorkout';
+import CardioWorkout from '../../Components/CardioWorkout';
 
 
 interface CardioWorkoutDatabase

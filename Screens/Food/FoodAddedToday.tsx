@@ -1,6 +1,6 @@
 import React, { useState,useEffect, useContext } from 'react';
 import { ScrollView, TextInput, TouchableHighlight, View, Text, StyleSheet } from 'react-native';
-import TodayFoodItem from '../../Components/WeightLifting/TodayFoodItem';
+import TodayFoodItem from '../../Components/TodayFoodItem';
 import { get, ref } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
 import { FitnessContext } from '../../FitnessContext';

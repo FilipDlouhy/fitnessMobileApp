@@ -1,7 +1,7 @@
 import { get, ref, set } from 'firebase/database';
 import React,{useEffect} from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { db } from '../../FireBaseConfig';
+import { db } from '../FireBaseConfig';
 
 
 interface foodDatabase

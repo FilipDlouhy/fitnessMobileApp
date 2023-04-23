@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
-import Workout from '../../Components/WeightLifting/Workout';
+import Workout from '../../Components/Workout';
 import {useEffect, useState} from "react"
 import {ref,get} from "firebase/database"
 import { db } from '../../FireBaseConfig';

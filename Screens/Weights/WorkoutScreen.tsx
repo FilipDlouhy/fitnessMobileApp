@@ -5,13 +5,13 @@ import {
     TouchableHighlight,
     ScrollView
 } from 'react-native';
-import Workout from '../../Components/WeightLifting/Workout';
+import Workout from '../../Components/Workout';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { get, ref, set } from 'firebase/database';
 import { db } from '../../FireBaseConfig';
-import WorkoutExerSize from '../../Components/WeightLifting/WorkoutExerSize';
+import WorkoutExerSize from '../../Components/WorkoutExerSize';
 import uuid from 'react-uuid';
 
 interface exerSize 

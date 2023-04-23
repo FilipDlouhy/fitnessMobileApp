@@ -2,7 +2,7 @@ import React from 'react'
 import { get, ref, set } from 'firebase/database';
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableHighlight } from 'react-native';
-import { db } from '../../FireBaseConfig';  
+import { db } from '../FireBaseConfig';
 
 interface CardioWorkoutDatabase
 {
@@ -142,3 +142,10 @@ const styles = StyleSheet.create({
       fontWeight:"500"
     }
   });
+
+
+
+
+
+
+

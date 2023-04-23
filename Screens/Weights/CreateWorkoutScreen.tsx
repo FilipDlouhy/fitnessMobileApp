@@ -1,11 +1,10 @@
-import {useContext, useState} from "react"
-import Workout from '../../Components/WeightLifting/Workout';
+import {useContext, useEffect, useState} from "react"
+import Workout from '../../Components/Workout';
 import { View, Text, StyleSheet,ScrollView,TextInput, TouchableHighlight } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import ExerSize from "../../Components/WeightLifting/ExerSize";
+import ExerSize from "../../Components/ExerSize";
 import {ref,set,get} from "firebase/database"
 import { db } from '../../FireBaseConfig';
-import { FitnessContext } from '../../FitnessContext';
 import uuid from "react-uuid";
 export default function CreateWorkoutScreen({ navigation }:any) {
 
@@ -14,9 +13,8 @@ interface exerSize
 name:string,
 sets:number
 }
-
-
     const [WokroutName, setWorkoutName] = useState('');
+    const [heading,setHeading] = useState<string>("Create your workout")
     const [SelectedExerSize, setSelectedExerSize] = useState("");
     const [ExerSizeSets, setExerSizeSets] = useState<number>(0);
     const [ExerSizes, setExerSizes] = useState<exerSize[]>([]);
@@ -86,22 +84,33 @@ sets:number
 
 
       const AddWorkoutToDatabase = () => {
-        const id = uuid()
-        const workout ={
-            name:WokroutName,
-            exersizes:ExerSizes,
-            id:id
+        if(ExerSizes.length > 0 )
+        {
+            const id = uuid()
+            const workout ={
+                name:WokroutName,
+                exersizes:ExerSizes,
+                id:id
+            }
+            set(ref(db,"workouts/"+id),workout)
+            navigation.navigate('Weight Lifting')
         }
-        set(ref(db,"workouts/"+id),workout)
-        navigation.navigate('Weight Lifting')
+        else
+        {
+            setHeading("Create your workout")
+        }
       };
+
+      useEffect(()=>{
+        setHeading("Please select exeresize")
+      },[])
 
     return (
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
             <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>Create your workout</Text>
+                <Text style={styles.HeadingText}>{heading}</Text>
             </View>
 
             <View style={styles.label}>

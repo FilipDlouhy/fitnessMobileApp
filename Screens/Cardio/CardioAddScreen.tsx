@@ -20,9 +20,13 @@ export default function CardioAddScreen({navigation}:any) {
     const [duration, setDuration] = useState('');
     const [selectedIntesity, setSelectedIntesity] = useState("");
     const {selectedSport} = useContext(FitnessContext)
+    const [heading,setHeading] = useState<string>(selectedSport)
     const handleDurationChange = (newText:string) => {
         setDuration(newText);
     };
+    useEffect(()=>{
+      setHeading(selectedSport)
+    },[])
 
     function calculateCaloriesBurned(sport: string, intensity: string, duration: number): number {
         const SPORTS: Record<string, Record<string, number>> = {
@@ -66,43 +70,51 @@ export default function CardioAddScreen({navigation}:any) {
 
       function addCardioToDatabase()
       {
-        const calories = calculateCaloriesBurned(selectedSport.toLocaleLowerCase(),selectedIntesity.toLocaleLowerCase(),parseInt(duration))
-        const date = new Date()
-        const id = uuid()
-        const cardio:CardioWorkoutDatabase = 
+        if(duration && selectedIntesity)
         {
-            calories:calories,
-            date:date.toDateString(),
-            sport:selectedSport,
-            id:id,
-            duration:parseInt(duration)
-        }
-        const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
-        let newCalories =  calories
-         get(caloriesBurnedTodayRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            
-            Object.values(snapshot.val()).map((item:any)=>{
-                newCalories+= item
-            })
-           
-            set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
-          }
-          else
+          const calories = calculateCaloriesBurned(selectedSport.toLocaleLowerCase(),selectedIntesity.toLocaleLowerCase(),parseInt(duration))
+          const date = new Date()
+          const id = uuid()
+          const cardio:CardioWorkoutDatabase = 
           {
-            set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
-
+              calories:calories,
+              date:date.toDateString(),
+              sport:selectedSport,
+              id:id,
+              duration:parseInt(duration)
           }
-        });
-        set(ref(db,"cardio/"+id),cardio)
-        navigation.navigate('Cardio')
+          const caloriesBurnedTodayRef = ref(db, `caloriesBurnedByDay/${date.toDateString()}`);
+          let newCalories =  calories
+           get(caloriesBurnedTodayRef).then((snapshot) => {
+            if (snapshot.exists()) {
+              
+              Object.values(snapshot.val()).map((item:any)=>{
+                  newCalories+= item
+              })
+             
+              set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
+            }
+            else
+            {
+              set(caloriesBurnedTodayRef,{caloriesBurned:newCalories})
+  
+            }
+          });
+          set(ref(db,"cardio/"+id),cardio)
+          navigation.navigate('Cardio')
+        }
+        else
+        {
+          setHeading("Select duration")
+        }
+
       }
 
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
             <View style={styles.Heading}>
-                <Text style={styles.HeadingText}>{selectedSport}</Text>
+                <Text style={styles.HeadingText}>{heading}</Text>
             </View>
 
             <View style={styles.FormContainer}>

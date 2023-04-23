@@ -2,7 +2,6 @@ import { get, ref } from 'firebase/database';
 import { useEffect,useState } from 'react';
 import { View, Text, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
 import { db } from '../FireBaseConfig';
-import Workout from '../Components/WeightLifting/Workout';
 
 export default function YourStatsScreen({ navigation }:any) {
 
